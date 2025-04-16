@@ -1,0 +1,31 @@
+name: Build & Deploy React App
+
+on:
+  push:
+    branches: [main] 
+
+jobs:
+  build-and-deploy:
+    runs-on: self-host
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Log in to DockerHub
+      run: echo "${{ secrets.Priyanga@123}}" | docker login -u ${{ secrets.priyangasaravanan841@gmail.com}} --password-stdin
+
+    - name: Build Docker image
+      run: docker build -t your-dockerhub-priyangasaravanan/react-app:latest .
+
+    - name: Push image to DockerHub
+      run: docker push your-dockerhub-priyangasaravanan/react-app:latest
+
+    - name: SSH & Deploy to Server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        script: |
+          docker pull your-dockerhub-priyangasaravanan/react-app:latest
+          docker stop react-app || true
+          docker rm react-app || true
+          docker run -d --name react-app -p 80:80 your-dockerhub-priyangasaravanan/react-app:latest
